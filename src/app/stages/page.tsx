@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Particles from 'react-particles'
 import { loadSlim } from 'tsparticles-slim'
 import type { Engine } from 'tsparticles-engine'
+import CustomCursor from '../../components/CustomCursor'
 
 interface Internship {
   id: string;
@@ -29,69 +30,9 @@ interface Internship {
 }
 
 export default function ProfessionalExperiencePage() {
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const [activeNav, setActiveNav] = useState('experience')
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({})
   const [activeFilter, setActiveFilter] = useState('all')
-  const [isHoveringClickable, setIsHoveringClickable] = useState(false)
-  const [isCursorVisible, setIsCursorVisible] = useState(true)
-  const cursorRef = useRef<HTMLDivElement>(null)
-
-  // Optimized cursor management - FIXED
-  useEffect(() => {
-    let animationFrameId: number
-    let lastX = 0
-    let lastY = 0
-    const sensitivity = 1
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isCursorVisible) return
-      
-      cancelAnimationFrame(animationFrameId)
-      
-      animationFrameId = requestAnimationFrame(() => {
-        const deltaX = Math.abs(e.clientX - lastX)
-        const deltaY = Math.abs(e.clientY - lastY)
-        
-        if (deltaX > sensitivity || deltaY > sensitivity) {
-          setCursorPosition({ 
-            x: Math.max(10, Math.min(window.innerWidth - 10, e.clientX)),
-            y: Math.max(10, Math.min(window.innerHeight - 10, e.clientY))
-          })
-          lastX = e.clientX
-          lastY = e.clientY
-        }
-      })
-    }
-
-    const handleMouseOver = (e: MouseEvent) => {
-      if (!isCursorVisible) return
-      
-      const target = e.target as HTMLElement
-      const isClickable = target.tagName === 'BUTTON' || 
-                         target.tagName === 'A' || 
-                         target.closest('button') !== null || 
-                         target.closest('a') !== null
-      
-      setIsHoveringClickable(isClickable)
-    }
-
-    const handleMouseOut = () => {
-      if (!isCursorVisible) return
-      setIsHoveringClickable(false)
-    }
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true })
-    document.addEventListener('mouseover', handleMouseOver, { passive: true })
-    document.addEventListener('mouseout', handleMouseOut, { passive: true })
-
-    return () => {
-      cancelAnimationFrame(animationFrameId)
-      window.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseover', handleMouseOver)
-      document.removeEventListener('mouseout', handleMouseOut)
-    }
-  }, [isCursorVisible])
 
   const particlesInit = useCallback(async (engine: Engine) => {
     await loadSlim(engine)
@@ -121,7 +62,7 @@ export default function ProfessionalExperiencePage() {
       id: 'internship4',
       company: 'NeoLedge',
       position: 'PFE Internship – AI Engineer',
-      period: 'January 2025 – June 2025',
+      period: 'January 2026 – June 2026',
       location: 'NeoLedge, Tunisia',
       description: 'Final-year internship focused on intelligent systems and AI-powered business solutions',
       technologies: ['Python', 'Machine Learning', 'Deep Learning', 'NLP', 'Computer Vision', 'FastAPI', 'Power BI', 'SQL'],
@@ -318,49 +259,6 @@ export default function ProfessionalExperiencePage() {
     >
       {tech}
     </motion.span>
-  )
-
-  // Optimized custom cursor
-  const CustomCursor = () => (
-    <motion.div
-      ref={cursorRef}
-      className={`fixed z-50 pointer-events-none hidden md:block transition-opacity duration-200 ${
-        isCursorVisible ? 'opacity-100' : 'opacity-0'
-      }`}
-      style={{
-        left: cursorPosition.x,
-        top: cursorPosition.y,
-      }}
-      animate={{
-        x: -10,
-        y: -10,
-        scale: isHoveringClickable ? 1.3 : 1,
-      }}
-      transition={{
-        type: "spring",
-        damping: 25,
-        stiffness: 400,
-        mass: 0.5
-      }}
-    >
-      <div className="relative">
-        <motion.div
-          className="w-6 h-6 border-2 border-cyan-400 rounded-full"
-          animate={{
-            scale: isHoveringClickable ? 1.1 : 0.8,
-            opacity: isHoveringClickable ? 0.8 : 0.5,
-          }}
-        />
-        
-        <motion.div
-          className="absolute top-1/2 left-1/2 w-2 h-2 bg-cyan-400 rounded-full transform -translate-x-1/2 -translate-y-1/2"
-          animate={{
-            scale: isHoveringClickable ? 1.8 : 1,
-            backgroundColor: isHoveringClickable ? '#f472b6' : '#22d3ee',
-          }}
-        />
-      </div>
-    </motion.div>
   )
 
   return (

@@ -6,9 +6,9 @@ import Link from 'next/link'
 import Particles from 'react-particles'
 import { loadSlim } from 'tsparticles-slim'
 import type { Engine } from 'tsparticles-engine'
+import CustomCursor from '../../components/CustomCursor'
 
 export default function ContactPage() {
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,15 +18,6 @@ export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [activeField, setActiveField] = useState('')
   const canvasRef = useRef<HTMLCanvasElement>(null)
-
-  // Enhanced custom cursor
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setCursorPosition({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
 
   // Particles initialization
   const particlesInit = useCallback(async (engine: Engine) => {
@@ -159,24 +150,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a18] to-[#1a1a2e] text-white overflow-hidden relative">
-      {/* Custom neuron-shaped cursor */}
-      <div 
-        className="fixed z-40 pointer-events-none hidden md:block"
-        style={{ 
-          left: `${cursorPosition.x}px`, 
-          top: `${cursorPosition.y}px`,
-          transform: 'translate(-50%, -50%)'
-        }}
-      >
-        <div className="w-6 h-6 relative">
-          <div className="absolute inset-0 bg-cyan-400 rounded-full opacity-70 animate-ping"></div>
-          <div className="absolute inset-0 bg-cyan-500 rounded-full"></div>
-          <div className="absolute -inset-2 border-2 border-cyan-400 rounded-full opacity-40"></div>
-          <div className="absolute -inset-1 border border-cyan-300 rounded-full opacity-30"></div>
-        </div>
-        {/* Light trail */}
-        <div className="absolute -inset-4 bg-cyan-400 rounded-full blur-md opacity-20"></div>
-      </div>
+      <CustomCursor />
 
       {/* Data flow animation across screen */}
       <div className="absolute inset-0 overflow-hidden">
@@ -470,7 +444,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-cyan-300">Electronic Transmission</h3>
-                    <p className="text-cyan-200/80">xxxxxxxxxx@gmail.com</p>
+                    <p className="text-cyan-200/80">mberikoumaima74@gmail.com</p>
                   </div>
                 </div>
                 
@@ -480,7 +454,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-cyan-300">Mobile Frequency</h3>
-                    <p className="text-cyan-200/80">+216 xxxxxxxx</p>
+                    <p className="text-cyan-200/80">+216 24520160</p>
                   </div>
                 </div>
                 

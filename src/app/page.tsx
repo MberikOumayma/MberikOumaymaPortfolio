@@ -5,10 +5,10 @@ import { motion } from 'framer-motion'
 import Particles from 'react-particles'
 import { loadSlim } from 'tsparticles-slim'
 import type { Engine } from 'tsparticles-engine'
+import CustomCursor from '../components/CustomCursor'
 
 export default function NeuralEntrance() {
   const [currentQuote, setCurrentQuote] = useState(0)
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const [showGuide, setShowGuide] = useState(false)
   const [isFirstVisit, setIsFirstVisit] = useState(true)
   
@@ -78,15 +78,6 @@ export default function NeuralEntrance() {
       clearInterval(interval2)
       clearInterval(interval3)
     }
-  }, [])
-
-  // Custom cursor
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setCursorPosition({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
   // Particles initialization
@@ -167,24 +158,7 @@ export default function NeuralEntrance() {
         </motion.div>
       )}
 
-      {/* Custom neuron-shaped cursor */}
-      <div 
-        className="fixed z-40 pointer-events-none hidden md:block"
-        style={{ 
-          left: `${cursorPosition.x}px`, 
-          top: `${cursorPosition.y}px`,
-          transform: 'translate(-50%, -50%)'
-        }}
-      >
-        <div className="w-6 h-6 relative">
-          <div className="absolute inset-0 bg-cyan-400 rounded-full opacity-70 animate-ping"></div>
-          <div className="absolute inset-0 bg-cyan-500 rounded-full"></div>
-          <div className="absolute -inset-2 border-2 border-cyan-400 rounded-full opacity-40"></div>
-          <div className="absolute -inset-1 border border-cyan-300 rounded-full opacity-30"></div>
-        </div>
-        {/* Light trail */}
-        <div className="absolute -inset-4 bg-cyan-400 rounded-full blur-md opacity-20"></div>
-      </div>
+      <CustomCursor />
 
       {/* Data flow animation across the screen */}
       <div className="absolute inset-0 overflow-hidden">

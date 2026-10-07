@@ -8,6 +8,7 @@ import Particles from 'react-particles'
 import { loadSlim } from 'tsparticles-slim'
 import type { Engine } from 'tsparticles-engine'
 import type { Container } from 'tsparticles-engine'
+import CustomCursor from '../../components/CustomCursor'
 
 // Define TypeScript types
 interface ComplexityLevel {
@@ -49,21 +50,12 @@ interface Project {
 }
 
 export default function ProjectsPage() {
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const [activeFilter, setActiveFilter] = useState('all')
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({})
   const [showSkillRadar, setShowSkillRadar] = useState(false)
   const [showTimeline, setShowTimeline] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const networkCanvasRef = useRef<HTMLCanvasElement>(null)
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setCursorPosition({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
 
   const particlesInit = useCallback(async (engine: Engine) => {
     await loadSlim(engine)
@@ -722,6 +714,8 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a18] to-[#1a1a2e] text-white overflow-hidden relative">
+      <CustomCursor />
+
       {/* Data flow animation */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(5)].map((_, i) => (

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Particles from 'react-particles'
 import { loadSlim } from 'tsparticles-slim'
 import type { Engine } from 'tsparticles-engine'
+import CustomCursor from '../../components/CustomCursor'
 
 // Define TypeScript types
 interface SkillCategory {
@@ -36,21 +37,11 @@ interface NeuralNode {
 }
 
 export default function SkillsPage() {
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const [activeNav, setActiveNav] = useState('skills')
   const [activeTab, setActiveTab] = useState<'list' | 'network'>('list')
   const [activeCategory, setActiveCategory] = useState<string>('all')
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null)
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null)
-
-  // Enhanced custom cursor
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setCursorPosition({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
 
   // Particles initialization
   const particlesInit = useCallback(async (engine: Engine) => {
@@ -207,9 +198,14 @@ export default function SkillsPage() {
   // Neural network component
   const NeuralNetwork = () => {
     const networkCanvasRef = useRef<HTMLCanvasElement>(null)
-    const [networkHoveredNode, setNetworkHoveredNode] = useState<string | null>(null)
+    const networkHoveredNodeRef = useRef<string | null>(null)
+    const selectedSkillRef = useRef<Skill | null>(null)
     const nodesRef = useRef<NeuralNode[]>([])
     const animationIdRef = useRef<number | undefined>(undefined)
+
+    useEffect(() => {
+      selectedSkillRef.current = selectedSkill
+    }, [selectedSkill])
 
     useEffect(() => {
       if (!networkCanvasRef.current) return
@@ -335,7 +331,7 @@ export default function SkillsPage() {
           ctx.fill()
 
           // Border for hovered/selected node
-          if (networkHoveredNode === node.id || selectedSkill?.name === node.name) {
+          if (networkHoveredNodeRef.current === node.id || selectedSkillRef.current?.name === node.name) {
             ctx.beginPath()
             ctx.arc(node.x, node.y, size + 2, 0, Math.PI * 2)
             ctx.strokeStyle = '#ffffff'
@@ -344,7 +340,7 @@ export default function SkillsPage() {
           }
 
           // Label for hovered node
-          if (networkHoveredNode === node.id) {
+          if (networkHoveredNodeRef.current === node.id) {
             ctx.font = '12px sans-serif'
             ctx.fillStyle = '#ffffff'
             ctx.textAlign = 'center'
@@ -408,7 +404,7 @@ export default function SkillsPage() {
           return Math.sqrt(dx * dx + dy * dy) < size + 5
         })
 
-        setNetworkHoveredNode(nodeUnderMouse ? nodeUnderMouse.id : null)
+        networkHoveredNodeRef.current = nodeUnderMouse ? nodeUnderMouse.id : null
       }
 
       const handleClick = (e: MouseEvent) => {
@@ -432,7 +428,12 @@ export default function SkillsPage() {
         }
       }
 
+      const handleMouseLeave = () => {
+        networkHoveredNodeRef.current = null
+      }
+
       canvas.addEventListener('mousemove', handleMouseMove)
+      canvas.addEventListener('mouseleave', handleMouseLeave)
       canvas.addEventListener('click', handleClick)
 
       // Cleanup
@@ -442,9 +443,10 @@ export default function SkillsPage() {
         }
         window.removeEventListener('resize', resizeCanvas)
         canvas.removeEventListener('mousemove', handleMouseMove)
+        canvas.removeEventListener('mouseleave', handleMouseLeave)
         canvas.removeEventListener('click', handleClick)
       }
-    }, [selectedSkill])
+    }, [])
 
     return (
       <div className="relative w-full h-full">
@@ -488,24 +490,7 @@ export default function SkillsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a18] to-[#1a1a2e] text-white overflow-hidden relative">
-      {/* Custom neuron-shaped cursor */}
-      <div 
-        className="fixed z-40 pointer-events-none hidden md:block"
-        style={{ 
-          left: `${cursorPosition.x}px`, 
-          top: `${cursorPosition.y}px`,
-          transform: 'translate(-50%, -50%)'
-        }}
-      >
-        <div className="w-6 h-6 relative">
-          <div className="absolute inset-0 bg-cyan-400 rounded-full opacity-70 animate-ping"></div>
-          <div className="absolute inset-0 bg-cyan-500 rounded-full"></div>
-          <div className="absolute -inset-2 border-2 border-cyan-400 rounded-full opacity-40"></div>
-          <div className="absolute -inset-1 border border-cyan-300 rounded-full opacity-30"></div>
-        </div>
-        {/* Light trail */}
-        <div className="absolute -inset-4 bg-cyan-400 rounded-full blur-md opacity-20"></div>
-      </div>
+      <CustomCursor />
 
       {/* Data flow animation across the screen */}
       <div className="absolute inset-0 overflow-hidden">
